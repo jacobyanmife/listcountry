@@ -60,9 +60,13 @@ class _CountryScreenState extends State<CountryScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.language_outlined)),
+                      Container(
+                        height: 10,
+                        width: 42,
+                        child: IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.language_outlined)),
+                      ),
                       Spacer(),
                       IconButton(
                           onPressed: () {},
@@ -71,23 +75,24 @@ class _CountryScreenState extends State<CountryScreen> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                        itemCount: 5,
+                        itemCount: country?.length ?? 0,
                         itemBuilder: (context, int index) {
+                          Country item = country![index];
                           return ListTile(
                               contentPadding: EdgeInsets.all(8.0),
                               title: (Text(
-                                'Country',
+                                item.name?.common ?? "",
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: 15,
                                     fontFamily: 'Roboto'),
                               )),
-                              subtitle: (Text('State',
+                              subtitle: (Text(item.capital?.first ?? "",
                                   style: TextStyle(
                                       fontWeight: FontWeight.w300,
                                       fontSize: 12,
                                       fontFamily: 'Roboto'))),
-                              leading: Image.asset('assets/country.jpg'));
+                              leading: Image.network(item.flags!.png ?? ""));
                         }),
                   )
                 ],
