@@ -23,10 +23,15 @@ Also used value notifier for dark mode changes.
 - little understanding on packages used; i made use of stackoverflow documentation to resolve
 Along with assistance from friends and colleagues.
 - the faster I resolve the better I get used to the system. 
+- the international language package was really giving me tough time with all my attempts
+-  I will love to understand better how to resolveComplex API so I can implement them well.
 
-# description of features
-I would have love to add navigator work more with implementing more feature like the language which is 
-Is really giving me tough time with all my attempts and also will love to understand better how to resolve
-Complex API so I can implement then well.
+
+# description of features will like to add
+- I would have love to add navigator
+- links to web for better viewing of county info
 
 # link to my APK
+Kk
+# link to Appetizer
+H
