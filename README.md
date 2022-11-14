@@ -34,4 +34,4 @@ Along with assistance from friends and colleagues.
 # link to my APK
 https://drive.google.com/file/d/14hKuH6MAg_1oX5UTS8H2BKuhjth4vrSu/view?usp=drive_open
 # link to Appetizer
-
+https://appetize.io/app/brvhg4shwipl72z4dplrbas7ye?device=pixel4&osVersion=11.0&scale=75
