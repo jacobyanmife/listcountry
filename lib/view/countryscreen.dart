@@ -4,8 +4,6 @@ import 'package:listcountry/model/countrymodel.dart';
 import 'package:listcountry/view/Screen2.dart';
 import '../main.dart';
 
-import 'country_details.dart';
-
 class CountryScreen extends StatefulWidget {
   const CountryScreen({super.key});
 
@@ -14,9 +12,11 @@ class CountryScreen extends StatefulWidget {
 }
 
 class _CountryScreenState extends State<CountryScreen> {
-  late List<Country>? country = [];
+  List<Country> filtered = [];
+  late List<Country>? rawList = [];
   bool isSelected = false;
 
+  String? filter;
   @override
   void initState() {
     super.initState();
@@ -24,10 +24,19 @@ class _CountryScreenState extends State<CountryScreen> {
   }
 
   void _getData() async {
-    country = (await ApiService().getCountry());
-    print(country);
-    Future.delayed(Duration(seconds: 1)).then((value) => setState(() {}));
+    rawList = (await ApiService().getCountry());
+    if (rawList == null) return;
+    rawList!.sort(
+        (a, b) => (a.name?.official ?? '').compareTo(b.name?.official ?? ''));
+    rawList?.forEach((element) {
+      continents.addAll(element.continents ?? []);
+    });
+    continents = continents.toSet().toList();
+    filtered.addAll(rawList!);
+    Future.delayed(const Duration(seconds: 1)).then((value) => setState(() {}));
   }
+
+  List<String> continents = [];
 
   void dispose() {
     // TODO: implement dispose
@@ -37,7 +46,7 @@ class _CountryScreenState extends State<CountryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(country?.length);
+    print(filtered?.length);
     bool isDark = darkNotifier.value;
     bool isSelected = false;
 
@@ -52,8 +61,8 @@ class _CountryScreenState extends State<CountryScreen> {
                 SizedBox(
                     width: 120,
                     child: isDark == true
-                        ? Image.asset('assets/logo.png')
-                        : Image.asset('assets/logo1.png')),
+                        ? Image.asset('assets/logo1.png')
+                        : Image.asset('assets/logo.png')),
                 Spacer(),
                 IconButton(
                   onPressed: () {
@@ -70,13 +79,33 @@ class _CountryScreenState extends State<CountryScreen> {
                 height: 60,
                 width: MediaQuery.of(context).size.width,
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: InputBorder.none,
                     prefixIcon: Icon(Icons.search),
                     labelText: 'Search Country',
                     enabledBorder:
                         OutlineInputBorder(borderSide: BorderSide(width: 3)),
                   ),
+                  onChanged: (b) {
+                    String a = b.trim();
+                    if (a.isNotEmpty) {
+                      if (rawList == null) return;
+                      filtered.clear();
+                      for (Country item in rawList!) {
+                        if ((item.name?.official
+                                    ?.toUpperCase()
+                                    .contains(a.toUpperCase()) ??
+                                true) &&
+                            (item.continents?.contains(filter) ?? true)) {
+                          filtered.add(item);
+                        }
+                      }
+                    } else {
+                      filtered.clear();
+                      filtered.addAll(rawList!);
+                    }
+                    setState(() {});
+                  },
                 ),
               ),
               SizedBox(height: 10),
@@ -110,41 +139,91 @@ class _CountryScreenState extends State<CountryScreen> {
                     ),
                   ),
                   Spacer(),
-                  Container(
-                    height: 42,
-                    width: 85,
-                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                      color: Colors.black,
-                      width: 2,
-                    )),
-                    child: Center(
-                      child: FittedBox(
-                        fit: BoxFit.cover,
-                        child: Row(
-                          children: [
-                            IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.filter_alt_outlined)),
-                            Text(
-                              'Filter',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            )
-                          ],
+                  if (filter != null)
+                    Text(
+                      filter!,
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  SizedBox(width: 6),
+                  if (filter != null)
+                    InkWell(
+                      onTap: () {
+                        filter = null;
+                        filtered.clear();
+                        filtered.addAll(rawList!);
+                        setState(() {});
+                      },
+                      child: Icon(Icons.close, size: 18),
+                    ),
+                  SizedBox(width: 10),
+                  PopupMenuButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      onSelected: (String a) {
+                        filter = a;
+                        if (a.isNotEmpty) {
+                          if (rawList == null) return;
+                          filtered.clear();
+                          for (Country item in rawList!) {
+                            if ((item.continents?.contains(filter) ?? true)) {
+                              filtered.add(item);
+                            }
+                          }
+                        } else {
+                          filtered.clear();
+                          filtered.addAll(rawList!);
+                        }
+                        setState(() {});
+                      },
+                      child: Container(
+                        height: 42,
+                        width: 85,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                          color: Colors.black,
+                          width: 2,
+                        )),
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.filter_alt_outlined, size: 20),
+                              Text(
+                                'Filter',
+                                style: TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.bold),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ),
+                      itemBuilder: (BuildContext context) => continents
+                          .map(
+                            (e) => PopupMenuItem<String>(
+                              value: e,
+                              height: 40,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(e),
+                                ],
+                              ),
+                            ),
+                          )
+                          .toList())
                 ],
               ),
               SizedBox(height: 10),
               Expanded(
                 child: ListView.builder(
-                  itemCount: country?.length ?? 0,
+                  itemCount: filtered?.length ?? 0,
                   itemBuilder: (context, int index) {
-                    Country item = country![index];
+                    Country item = filtered![index];
                     return ListTile(
                       contentPadding: EdgeInsets.all(8.0),
                       onTap: () {
