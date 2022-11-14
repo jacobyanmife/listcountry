@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
@@ -9,9 +10,18 @@ class ApiService {
     try {
       var url = Uri.parse(ApiConstants.baseUrl);
       var response = await http.get(url);
+      print(response.body);
       if (response.statusCode == 200) {
-        List<Country> _model = countryFromJson(response.body);
-        return _model;
+        List<Country> countries = [];
+        jsonDecode(response.body).forEach((element) {
+          try {
+            countries.add(Country.fromJson(element));
+          } catch (e) {
+            log(e.toString());
+          }
+        });
+        print(countries.length);
+        return countries;
       }
     } catch (e) {
       log(e.toString());

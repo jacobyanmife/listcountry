@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:listcountry/model/countrymodel.dart';
 
 class Screen2 extends StatefulWidget {
-  const Screen2({super.key});
+  const Screen2(this.country, {Key? key}) : super(key: key);
+  final Country country;
 
   @override
   State<Screen2> createState() => _Screen2State();
@@ -13,45 +15,34 @@ class _Screen2State extends State<Screen2> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        leading: GestureDetector(
-          child: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-          ),
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('Country'),
+        backgroundColor: Theme.of(context).primaryColor,
+        title: Text(widget.country.name?.official ?? ''),
       ),
       body: Padding(
-        padding: EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Column(children: [
-            Image.asset('assets/country.jpg'),
-            SizedBox(height: 10),
-            details('population:', ''),
-            details('Region:', ''),
-            details('Capital:', ''),
-            details('Motto:', ''),
-            SizedBox(height: 15),
-            details('Official Language:', ''),
-            details('Ethnic group:', ''),
-            details('Religion:', ''),
-            details('Government:', ''),
-            SizedBox(height: 15),
-            details('Independence:', ''),
-            details('Area:', ''),
-            details('Currency:', ''),
-            details('GDP:', ''),
-            SizedBox(height: 15),
-            details('Timezone:', ''),
-            details('Date format:', ''),
-            details('Dialing Code:', ''),
-            details('Driving Side:', ''),
-          ]),
-        ),
+        padding: const EdgeInsets.all(10.0),
+        child: ListView(children: [
+          Image.network(widget.country.flags?.png ?? ''),
+          SizedBox(height: 10),
+          details(
+              'Capital Info:', (widget.country.capitalInfo?.toString() ?? '')),
+          details('population:', (widget.country.population?.toString() ?? '')),
+          details('Region:', (widget.country.region?.toString() ?? '')),
+          details('Capital:', (widget.country.capital?.toString() ?? '')),
+          SizedBox(height: 15),
+          details('Continent:', (widget.country.continents?.toString() ?? '')),
+          details('Official Language:',
+              (widget.country.languages?.toString() ?? '')),
+          details('Subregion:', (widget.country.subregion?.toString() ?? '')),
+          details(
+              'Independence:', (widget.country.independent?.toString() ?? '')),
+          details('Area:', (widget.country.area?.toString() ?? '')),
+          details('Currency:', (widget.country.currencies?.toString() ?? '')),
+          SizedBox(height: 15),
+          details('Government:', (widget.country.unMember?.toString() ?? '')),
+          details(
+              'Coat of Arm:', (widget.country.coatOfArms?.toString() ?? '')),
+          details('car:', (widget.country.car?.toString() ?? '')),
+        ]),
       ),
     );
   }
@@ -67,10 +58,13 @@ Widget details(String detail, String link) {
         children: [
           Text(
             detail,
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          SizedBox(width: 10),
-          Text(link),
+          SizedBox(width: 20),
+          Text(
+            link,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
         ],
       )
     ],
